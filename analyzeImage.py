@@ -18,7 +18,7 @@ def spellcheck(val):
 	return s
 
 
-def run(filepath):
+def run(filepath, res):
 	# Replace <Subscription Key> with your valid subscription key.
 	subscription_key = "bdc1312c4a4f4371ad51430be98ae6cc"
 	assert subscription_key
@@ -75,26 +75,48 @@ def run(filepath):
 	val = parsejson("output.txt")
 	val = spellcheck(val)
 	keyPhr = keyPhrase(val)
-	return(val, keyPhr)
+	length = len(keyPhr)
+	max = length/10
 
-	# polygons=[]
-	# if ("recognitionResult" in analysis):
-	#     # Extract the recognized text, with bounding boxes.
-	#     polygons = [(line["boundingBox"], line["text"])
-	#         for line in analysis["recognitionResult"]["lines"]]
+	polygons=[]
+	length = len(keyPhr)
+	length = length//10
+	flag = True
+	num = 0
 
+	temp = keyPhr
+	keyPhr = list(keyPhr)[0:length]
 
-	# # Display the image and overlay it with the extracted text.
-	# plt.figure(figsize=(15, 15))
-	# image = Image.open(BytesIO(data))
-	# ax = plt.imshow(image)
-	# for polygon in polygons:
-	#     vertices = [(polygon[0][i], polygon[0][i+1])
-	#         for i in range(0, len(polygon[0]), 2)]
-	#     text     = polygon[1]
-	#     patch    = Polygon(vertices, closed=True, fill=False, linewidth=2, color='y')
-	#     ax.axes.add_patch(patch)
-	#     plt.text(vertices[0][0], vertices[0][1], text, fontsize=20, va="top")
-	# _ = plt.axis("off")
+	if ("recognitionResult" in analysis):
+		# Extract the recognized text, with bounding boxes.
+		polygons = [(line["boundingBox"], line["text"])
+			for line in analysis["recognitionResult"]["lines"]]
 
-print(run("uploads/IMG_0456.jpg"))
+	# Display the image and overlay it with the extracted text.
+	plt.figure(figsize=(15, 15))
+	image = Image.open(BytesIO(data))
+	ax = plt.imshow(image)
+	
+	for polygon in polygons:
+		vertices = [(polygon[0][i], polygon[0][i+1])
+			for i in range(0, len(polygon[0]), 2)]
+		text     = polygon[1]
+		col = 'w'
+		for phrase in keyPhr:
+			if phrase in text:
+					# print(phrase+"\n")
+					# print(num+"\n")
+					# print(length+"\n")
+				col = 'r'
+					# num+=1
+					# if(num == length):
+					# 	flag = False
+					# 	break
+				# if(flag == False):
+				# 	break
+		patch    = Polygon(vertices, closed=True, fill=False, linewidth=2, color=col)
+		ax.axes.add_patch(patch)
+		#plt.text(vertices[0][0], vertices[0][1], text, fontsize=20, va="top")
+	_ = plt.axis("off")
+	plt.savefig(res)
+	return(val, temp)
