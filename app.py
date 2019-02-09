@@ -1,11 +1,11 @@
 import os
 from flask import Flask, render_template, request, Markup, flash
 from flask_bootstrap import Bootstrap
-from analyzeImage import run
+from pdf import parse
 import subprocess
 
 app = Flask(__name__)
-Bootstrap(app)
+#Bootstrap(app)
 app.secret_key = os.urandom(24)
 UPLOAD_FOLDER = os.path.basename('uploads')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -19,13 +19,15 @@ def upload_file():
 	file = request.files['image']
 	f = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
 	file.save(f)
-	(res, keyPhr) = run(f)
+	(res, keyPhr) = parse(f)
 	res = Markup("<p>"+res+"</p>")
-	res1 = subprocess.run(["python","test.py", "foo bar"])
-	print(res1.stdout)
+	print(res)
+	# res1 = subprocess.run(["python","test.py", "foo bar"])
+	# print(res1.stdout)
 	flash(res,'message')
 	for word in keyPhr:
 		flash(word, 'keyPhrase')
+	#print(message.sid)
 	return render_template('home.html')
 
 if __name__ == "__main__":
