@@ -1,5 +1,5 @@
 import pprint
-subscription_key = "8e4496657d114d88a93dc38582c339dc"
+subscription_key = ""
 assert subscription_key
 import requests
 import json
